@@ -33,7 +33,7 @@ d3.csv('deces1.csv', dataset => {
 
         console.log(countries);
 
-				// A update à la main, dernière date du dataset
+				// A update à la main, dernière date du dataset 
 				max_date = '2020-05-14'
 
         displayCountries(svg, path, countries, dataset, max_date)
