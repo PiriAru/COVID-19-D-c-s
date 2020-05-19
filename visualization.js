@@ -77,7 +77,7 @@ function hslToHex(h, s, l) {
  * @param date
  */
 function displayCountries(svg, path, countries, dataset, max_date) {
-    const max = d3.max(dataset, d => parseInt(d[max_date]) / parseInt(d['population']) * 1_000_000 + 1);
+    const max = d3.max(dataset, d => parseInt(d[max_date]) / parseInt(d['population']) * 1000000 + 1);
     const logMax = Math.log2(max)
 
     var colorScale = d3.scaleLinear()
@@ -132,9 +132,9 @@ function displayCountries(svg, path, countries, dataset, max_date) {
         .style("fill", "url(#linear-gradient)");
 
     //create tick marks
-    console.log(`max ${(max - 1)/1_000_000}`)
+    console.log(`max ${(max - 1)/1000000}`)
     var xLeg = d3.scaleLog()
-        .domain([1/1_000_000,(max - 1)/1_000_000])
+        .domain([1/1000000,(max - 1)/1000000])
         .range([10, 800]) // This is where the axis is placed: from 10 px to 400px
         .base(2)
 
@@ -168,7 +168,7 @@ function updateCountriesColor(svg, path, countries, dataset, max_date) {
             const name = d.properties.name
             const match = dataset.filter(row => row['Country/Region'] === name)
             if (match.length > 0) {
-                const logInfected = Math.log2(parseInt(match[0][max_date]) / parseInt(match[0]['population']) * 1_000_000 + 1)
+                const logInfected = Math.log2(parseInt(match[0][max_date]) / parseInt(match[0]['population']) * 1000000 + 1)
                 return hslToHex(0, 1, 1 - logInfected / logMax)
             } else {
                 return hslToHex(180, 1, 50)
