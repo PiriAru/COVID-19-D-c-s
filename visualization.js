@@ -1,13 +1,10 @@
 data = {}
-d3.csv('deces1.csv', dataset => {
-		data.dataset = dataset
-    console.log(dataset)
+d3.csv('deces.csv', dataset => {
+	data.dataset = dataset
 
     var margin = {top: 75, left: 50, right: 50, bottom: 0},
         height = 450 - margin.top - margin.bottom,
         width = 700 - margin.left - margin.right;
-    console.log(height);
-    console.log(width);
 
     var svg = d3.select("#map")
         .append("svg")
@@ -18,6 +15,7 @@ d3.csv('deces1.csv', dataset => {
 
     d3.queue()
         .defer(d3.json, "cartedumonde.topojson")
+        .defer(d3.csv, "population1.csv")
         .await(ready)
 
     var projection = d3.geoMercator()
@@ -27,16 +25,23 @@ d3.csv('deces1.csv', dataset => {
     var path = d3.geoPath()
         .projection(projection);
 
-    function ready(error, data) {
-        var countries = topojson.feature(data, data.objects.countries).features;
-        console.log(topojson.feature(data, data.objects.countries))
+    function ready(error, topoData, populationData) {
+        var countries = topojson.feature(topoData, topoData.objects.countries).features;
 
-        console.log(countries);
+        // Findind matches for population data, injecting them into main dataset
+        data.dataset.forEach(d => {
+            const match = populationData.find(e => e.name === d['Country/Region']);
+            if (match) {
+              d.population = parseInt(match.population);
+            } else {
+                console.warn('Could not find population data for ' + d['Country/Region']);
+            }
+        })
 
-				// A update à la main, dernière date du dataset 
-				max_date = '2020-05-14'
+        // A update à la main, dernière date du dataset 
+        max_date = '5/14/20'
 
-        displayCountries(svg, path, countries, dataset, max_date)
+        displayCountries(svg, path, countries, max_date)
     }
 })
 
@@ -76,8 +81,8 @@ function hslToHex(h, s, l) {
  * @param dataset infected people data
  * @param date
  */
-function displayCountries(svg, path, countries, dataset, max_date) {
-    const max = d3.max(dataset, d => parseInt(d[max_date]) / parseInt(d['population']) * 1000000 + 1);
+function displayCountries(svg, path, countries, max_date) {
+    const max = d3.max(data.dataset, d => parseInt(d[max_date]));
     const logMax = Math.log2(max)
 
     var colorScale = d3.scaleLinear()
@@ -132,9 +137,8 @@ function displayCountries(svg, path, countries, dataset, max_date) {
         .style("fill", "url(#linear-gradient)");
 
     //create tick marks
-    console.log(`max ${(max - 1)/1000000}`)
     var xLeg = d3.scaleLog()
-        .domain([1/1000000,(max - 1)/1000000])
+        .domain([0, max])
         .range([10, 800]) // This is where the axis is placed: from 10 px to 400px
         .base(2)
 
@@ -156,19 +160,19 @@ function displayCountries(svg, path, countries, dataset, max_date) {
         .attr("stroke", "black")
         .attr("d", path)
 
-		updateCountriesColor(svg, path, countries, dataset, max_date)
+		updateCountriesColor(svg, path, countries, max_date)
 }
 
-function updateCountriesColor(svg, path, countries, dataset, max_date) {
-    const max = d3.max(dataset, d => parseInt(d[max_date]) / parseInt(d['population']) * 1000000 + 1);
+function updateCountriesColor(svg, path, countries, max_date) {
+    const max = d3.max(data.dataset, d => parseInt(d[max_date]));
     const logMax = Math.log2(max)
 
     svg.selectAll(".country")
         .attr("fill", (d, _) => {
             const name = d.properties.name
-            const match = dataset.filter(row => row['Country/Region'] === name)
+            const match = data.dataset.filter(row => row['Country/Region'] === name)
             if (match.length > 0) {
-                const logInfected = Math.log2(parseInt(match[0][max_date]) / parseInt(match[0]['population']) * 1000000 + 1)
+                const logInfected = Math.log2(parseInt(match[0][max_date]))
                 return hslToHex(0, 1, 1 - logInfected / logMax)
             } else {
                 return hslToHex(180, 1, 50)
@@ -176,12 +180,11 @@ function updateCountriesColor(svg, path, countries, dataset, max_date) {
         })
         .on("click", (d, _) => {
             const name = d.properties.name
-            const match = dataset.filter(row => row['Country/Region'] === name)
+            const match = data.dataset.filter(row => row['Country/Region'] === name)
             if (match.length > 0) {
-                const infectedRate = parseInt(match[0][max_date]) / parseInt(match[0]['population'])
-
-                console.log(name)
-                console.log(`${infectedRate * 100}% of population infected`)
+                const infectedCount = parseInt(match[0][max_date]);
+                const infectedRate = parseInt(match[0][max_date]) / match[0].population * 100;
+                console.log(name, `${infectedCount} people infected (${infectedRate.toFixed(5)}%)`);
             }
         })
 }
