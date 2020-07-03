@@ -126,7 +126,7 @@ function displayCountries(svg, path, countries, max_date) {
         .attr("x", 0)
         .attr("y", 20)
         .style("text-anchor", "left")
-        .text("Legend title");
+        .text("Légende :");
 
     // draw the rectangle and fill with gradient
     svgLegend.append("rect")
