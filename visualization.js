@@ -32,7 +32,7 @@ d3.csv('deces.csv', dataset => {
         data.dataset.forEach(d => {
             const match = populationData.find(e => e.name === d['Country/Region']);
             if (match) {
-              d.population = parseInt(match.population);
+              d.population = (match.population);
             } else {
                 console.warn('Could not find population data for ' + d['Country/Region']);
             }
