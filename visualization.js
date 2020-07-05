@@ -49,7 +49,6 @@ function initMap() {
                 }
             })
 
-            // A update à la main, dernière date du dataset 
             max_date = $('#selectedDate').val() // Uses the user's input
             console.log(max_date)
 
