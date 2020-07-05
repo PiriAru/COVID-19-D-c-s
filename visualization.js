@@ -14,10 +14,13 @@ data = {}
 function initMap() {
     d3.csv('deces.csv', dataset => {
         data.dataset = dataset
+    console.log(dataset)
 
         var margin = {top: 75, left: 50, right: 50, bottom: 0},
             height = 450 - margin.top - margin.bottom,
             width = 700 - margin.left - margin.right;
+        console.log(height)
+        console.log(width)
 
         var svg = d3.select("#map")
             .append("svg")
@@ -53,8 +56,10 @@ function initMap() {
 
             // A update à la main, dernière date du dataset 
             max_date = $('#selectedDate').val() // Uses the user's input
+            console.log(max_date)
 
             displayCountries(svg, path, countries, max_date)
+            updateCountriesColor(svg, path, countries, dataset, max_date)
         }
     })
 }
