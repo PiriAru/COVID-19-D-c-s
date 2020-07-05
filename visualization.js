@@ -1,49 +1,66 @@
-data = {}
-d3.csv('deces.csv', dataset => {
-	data.dataset = dataset
-
-    var margin = {top: 75, left: 50, right: 50, bottom: 0},
-        height = 450 - margin.top - margin.bottom,
-        width = 700 - margin.left - margin.right;
-
-    var svg = d3.select("#map")
-        .append("svg")
-        .attr("height", height + margin.top + margin.bottom)
-        .attr("width", width + margin.left + margin.right)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    d3.queue()
-        .defer(d3.json, "cartedumonde.topojson")
-        .defer(d3.csv, "population1.csv")
-        .await(ready)
-
-    var projection = d3.geoMercator()
-        .translate([width / 2, height / 2 + 50])
-        .scale(100);
-
-    var path = d3.geoPath()
-        .projection(projection);
-
-    function ready(error, topoData, populationData) {
-        var countries = topojson.feature(topoData, topoData.objects.countries).features;
-
-        // Findind matches for population data, injecting them into main dataset
-        data.dataset.forEach(d => {
-            const match = populationData.find(e => e.name === d['Country/Region']);
-            if (match) {
-              d.population = (match.population);
-            } else {
-                console.warn('Could not find population data for ' + d['Country/Region']);
-            }
-        })
-
-        // A update à la main, dernière date du dataset 
-        max_date = '5/14/20'
-
-        displayCountries(svg, path, countries, max_date)
-    }
+//initialize today's date
+$(document).ready( function() {
+    $('#selectedDate').val(new Date().toISOString().substr(0, 10))
 })
+// When user changes date, map content and legend are removed
+$( "#selectedDate" ).change(function() {
+    $("#map").empty()
+    $("#legend").remove()
+    initMap()
+})
+
+data = {}
+
+function initMap() {
+    d3.csv('deces.csv', dataset => {
+        data.dataset = dataset
+
+        var margin = {top: 75, left: 50, right: 50, bottom: 0},
+            height = 450 - margin.top - margin.bottom,
+            width = 700 - margin.left - margin.right;
+
+        var svg = d3.select("#map")
+            .append("svg")
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("width", width + margin.left + margin.right)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        d3.queue()
+            .defer(d3.json, "cartedumonde.topojson")
+            .defer(d3.csv, "population1.csv")
+            .await(ready)
+
+        var projection = d3.geoMercator()
+            .translate([width / 2, height / 2 + 50])
+            .scale(100);
+
+        var path = d3.geoPath()
+            .projection(projection);
+
+        function ready(error, topoData, populationData) {
+            var countries = topojson.feature(topoData, topoData.objects.countries).features;
+
+            // Findind matches for population data, injecting them into main dataset
+            data.dataset.forEach(d => {
+                const match = populationData.find(e => e.name === d['Country/Region']);
+                if (match) {
+                d.population = (match.population);
+                } else {
+                    console.warn('Could not find population data for ' + d['Country/Region']);
+                }
+            })
+
+            // A update à la main, dernière date du dataset 
+            max_date = $('#selectedDate').val() // Uses the user's input
+
+            displayCountries(svg, path, countries, max_date)
+        }
+    })
+}
+
+// First initialization
+initMap()
 
 function hslToHex(h, s, l) {
     h /= 360;
