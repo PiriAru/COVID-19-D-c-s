@@ -2,12 +2,7 @@
 $(document).ready( function() {
     $('#selectedDate').val(new Date().toISOString().substr(0, 10))
 })
-// When user changes date, map content and legend are removed
-$( "#selectedDate" ).change(function() {
-    $("#map").empty()
-    $("#legend").remove()
-    initMap()
-})
+
 
 data = {}
 
