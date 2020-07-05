@@ -38,18 +38,19 @@ function initMap() {
 
         function ready(error, topoData, populationData) {
             var countries = topojson.feature(topoData, topoData.objects.countries).features;
+            console.log(topojson.feature(topoData, topoData.objects.countries))
 
             // Findind matches for population data, injecting them into main dataset
             data.dataset.forEach(d => {
                 const match = populationData.find(e => e.name === d['Country/Region']);
                 if (match) {
-                d.population = (match.population);
+                    d.population = (match.population);
                 } else {
                     console.warn('Could not find population data for ' + d['Country/Region']);
                 }
             })
 
-            max_date = $('#selectedDate').val() // Uses the user's input
+                max_date = $('#selectedDate').val() // Uses the user's input
             console.log(max_date)
 
             displayCountries(svg, path, countries, max_date)
