@@ -194,13 +194,5 @@ function updateCountriesColor(svg, path, countries, max_date) {
                 return hslToHex(180, 1, 50)
             }
         })
-        .on("click", (d, _) => {
-            const name = d.properties.name
-            const match = data.dataset.filter(row => row['Country/Region'] === name)
-            if (match.length > 0) {
-                const infectedCount = parseInt(match[0][max_date]);
-                const infectedRate = parseInt(match[0][max_date]) / match[0].population * 100;
-                console.log(name, `${infectedCount} people infected (${infectedRate.toFixed(5)}%)`);
-            }
-        })
+
 }
