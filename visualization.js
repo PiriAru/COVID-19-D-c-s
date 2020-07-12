@@ -1,8 +1,13 @@
 //initialize today's date
 $(document).ready( function() {
-    $('#selectedDate').val(new Date().toISOString().substr(0, 10))
+    $('#selectedDate').val(new Date().toLocaleString().substr(0, 10))
 })
-
+//When user changes date, map content and legend are removed
+$("#selectedDate").change(function() {
+    $("#map").empty()
+    $("#legend").remove()
+    initMap()
+})
 
 data = {}
 
@@ -54,7 +59,7 @@ function initMap() {
             console.log(max_date)
 
             displayCountries(svg, path, countries, max_date)
-            updateCountriesColor(svg, path, countries, dataset, max_date)
+            updateCountriesColor(svg, path, countries, max_date)
         }
     })
 }
@@ -177,7 +182,7 @@ function displayCountries(svg, path, countries, max_date) {
         .attr("stroke", "black")
         .attr("d", path)
 
-		updateCountriesColor(svg, path, countries, max_date)
+	updateCountriesColor(svg, path, countries, max_date)
 }
 
 function updateCountriesColor(svg, path, countries, max_date) {
