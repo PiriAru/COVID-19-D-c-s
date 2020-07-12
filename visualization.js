@@ -1,6 +1,6 @@
 //initialize today's date
 $(document).ready( function() {
-    $('#selectedDate').val(new Date().toLocaleString().substr(0, 10))
+    $('#selectedDate').val(new Date().toLocaleDateString().substr(0, 10))
 })
 //When user changes date, map content and legend are removed
 $("#selectedDate").change(function() {
