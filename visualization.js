@@ -3,9 +3,9 @@ $(document).ready( function() {
     $('#selectedDate').val(new Date().toLocaleDateString().substr(0, 10))
 })
 //When user changes date, map content and legend are removed
-$("#selectedDate").change(function() {
+    $("#selectedDate").change(function() {
     $("#map").empty()
-    $("#legend").remove()
+    $("#legend").empty()
     initMap()
 })
 
@@ -55,7 +55,9 @@ function initMap() {
                 }
             })
 
-                max_date = $('#selectedDate').val() // Uses the user's input
+            max_date = $('#selectedDate').val() // Uses the user's input
+            // Transform date from input format to data's format 
+            max_date = +max_date.substr(5, 2) + '/' + +max_date.substr(8, 2) + '/' +max_date.substr(2, 2)
             console.log(max_date)
 
             displayCountries(svg, path, countries, max_date)
@@ -112,7 +114,7 @@ function displayCountries(svg, path, countries, max_date) {
         .range(['#FFFFFF', '#FF0000', '#000000']);
 
     // append a defs (for definition) element to your SVG
-    var svgLegend = d3.select('body').append('svg')
+    var svgLegend = d3.select('#legend').append('svg')
         .attr("width", 900);
     var defs = svgLegend.append('defs');
 
